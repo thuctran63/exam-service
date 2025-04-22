@@ -2,6 +2,8 @@ package englishapp.api.exam_service.models;
 
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Data;
 
 @Data
@@ -19,5 +21,6 @@ public class Question {
     @Field("answer_D")
     private String answerD;
     @Field("correct_answer")
+    @JsonIgnore
     private String correctAnswer;
 }

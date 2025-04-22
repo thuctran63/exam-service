@@ -2,9 +2,12 @@ package englishapp.api.exam_service.models;
 
 import java.util.List;
 import org.springframework.data.mongodb.core.mapping.Field;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class QuestionPart4 {
     @Field("image")
     private String image;

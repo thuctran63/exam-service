@@ -1,0 +1,17 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: exam-service
+  data:
+    mongodb:
+      uri: mongodb+srv://admin:admin@cluster.rxxscwr.mongodb.net/?retryWrites=true&w=majority&appName=Cluster
+      database: Exam
+      auto-index-creation: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger
+  api-docs:
+    path: /api-docs
