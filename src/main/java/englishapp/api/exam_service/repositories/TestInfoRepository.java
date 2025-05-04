@@ -10,4 +10,7 @@ import reactor.core.publisher.Flux;
 public interface TestInfoRepository extends ReactiveMongoRepository<TestInfo, String> {
     @Query("{ 'year': ?0 }")
     Flux<TestInfo> findByYear(String year);
+
+    @Query(value = "{}", fields = "{ 'year': 1 }")
+    Flux<TestInfo> findAllYears();
 }

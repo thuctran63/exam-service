@@ -1,5 +1,7 @@
 package englishapp.api.exam_service.controllers;
 
+import java.util.Objects;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,9 +10,11 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ServerWebExchange;
+import api.common.englishapp.auth.RequiresAuth;
+import api.common.englishapp.auth.UserData;
 import api.common.englishapp.requests.CommonResponse;
 import api.common.englishapp.requests.ResponseUtil;
 import englishapp.api.exam_service.dto.apiTestAnswer.InputParamApiTestAnswer;
@@ -19,7 +23,6 @@ import englishapp.api.exam_service.services.TestService;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/exam")
 public class ExamController {
     @Autowired
     private TestInfoService testInfoService;
@@ -43,6 +46,7 @@ public class ExamController {
                 });
     }
 
+    @RequiresAuth
     @GetMapping("/getTest")
     public Mono<ResponseEntity<CommonResponse<?>>> getTest(@RequestParam String idTest) {
         return testService.getTest(idTest)
@@ -60,13 +64,37 @@ public class ExamController {
                 });
     }
 
+    @SuppressWarnings("null")
+    @RequiresAuth
     @PostMapping("/TestAnswer")
-    public Mono<ResponseEntity<CommonResponse<?>>> testAnswer(@RequestBody InputParamApiTestAnswer input) {
+    public Mono<ResponseEntity<CommonResponse<?>>> testAnswer(ServerWebExchange exchange,
+            @RequestBody InputParamApiTestAnswer input) {
+
+        UserData userData = exchange.getAttribute("USER_DATA");
+
+        if (Objects.isNull(userData)) {
+            return Mono.just(ResponseUtil.unAuthorized("userId is null"));
+        }
         return testService.testAnswer(
-                input)
+                input, userData.getUserId())
                 .map(output -> ResponseUtil.ok(output))
                 .onErrorResume(e -> {
                     logger.error("Error occurred while submitting test answer: {}", e.getMessage(), e);
+                    return Mono.just(ResponseUtil.serverError(e.getMessage()));
+                });
+    }
+
+    @GetMapping("/getYears")
+    public Mono<ResponseEntity<CommonResponse<?>>> getYears() {
+        return testInfoService.getYear()
+                .map(output -> {
+                    if (CollectionUtils.isEmpty(output.getYears())) {
+                        return ResponseUtil.noContent();
+                    }
+                    return ResponseUtil.ok(output.getYears());
+                })
+                .onErrorResume(e -> {
+                    logger.error("Error occurred while getting years: {}", e.getMessage(), e);
                     return Mono.just(ResponseUtil.serverError(e.getMessage()));
                 });
     }
