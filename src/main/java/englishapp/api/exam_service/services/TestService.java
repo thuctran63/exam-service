@@ -1,5 +1,6 @@
 package englishapp.api.exam_service.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -73,6 +74,15 @@ public class TestService {
         int totalScore = convertedListening + convertedReading;
 
         output.setScore(String.valueOf(totalScore));
+        output.setAnswersPart1(answer.getAnswersPart1() != null ? answer.getAnswersPart1() : new ArrayList<>());
+        output.setAnswersPart2(answer.getAnswersPart2() != null ? answer.getAnswersPart2() : new ArrayList<>());
+        output.setAnswersPart3(answer.getAnswersPart3() != null ? answer.getAnswersPart3() : new ArrayList<>());
+        output.setAnswersPart4(answer.getAnswersPart4() != null ? answer.getAnswersPart4() : new ArrayList<>());
+        output.setAnswersPart5(answer.getAnswersPart5() != null ? answer.getAnswersPart5() : new ArrayList<>());
+        output.setAnswersPart6(answer.getAnswersPart6() != null ? answer.getAnswersPart6() : new ArrayList<>());
+        output.setAnswersPart7(answer.getAnswersPart7() != null ? answer.getAnswersPart7() : new ArrayList<>());
+        output.setScoreListening(String.valueOf(convertedListening));
+        output.setScoreReading(String.valueOf(convertedReading));
     }
 
     private int convertToToeicScore(int raw, String section) {

@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 public class OutputParamApiTestAnswer {
     private String idTest;
     private String score;
+    private String scoreListening;
+    private String scoreReading;
     private List<AnswerPerQuestion> answersPart1;
     private List<AnswerPerQuestion> answersPart2;
     private List<AnswerPerQuestion> answersPart3;

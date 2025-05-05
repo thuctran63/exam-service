@@ -18,16 +18,20 @@ import api.common.englishapp.auth.UserData;
 import api.common.englishapp.requests.CommonResponse;
 import api.common.englishapp.requests.ResponseUtil;
 import englishapp.api.exam_service.dto.apiTestAnswer.InputParamApiTestAnswer;
+import englishapp.api.exam_service.services.HistoryTestService;
 import englishapp.api.exam_service.services.TestInfoService;
 import englishapp.api.exam_service.services.TestService;
 import reactor.core.publisher.Mono;
 
 @RestController
+@SuppressWarnings("null")
 public class ExamController {
     @Autowired
     private TestInfoService testInfoService;
     @Autowired
     private TestService testService;
+    @Autowired
+    private HistoryTestService historyTestService;
 
     private static final Logger logger = LogManager.getLogger(ExamController.class);
 
@@ -64,7 +68,6 @@ public class ExamController {
                 });
     }
 
-    @SuppressWarnings("null")
     @RequiresAuth
     @PostMapping("/TestAnswer")
     public Mono<ResponseEntity<CommonResponse<?>>> testAnswer(ServerWebExchange exchange,
@@ -99,4 +102,25 @@ public class ExamController {
                 });
     }
 
+    @GetMapping("/getAllHistoryTest")
+    @RequiresAuth
+    public Mono<ResponseEntity<CommonResponse<?>>> getAllHistoryTest(ServerWebExchange exchange) {
+        UserData userData = exchange.getAttribute("USER_DATA");
+
+        if (Objects.isNull(userData)) {
+            return Mono.just(ResponseUtil.unAuthorized("userId is null"));
+        }
+        return historyTestService.getAllHistoryTest(userData.getUserId())
+                .map(output -> {
+                    if (CollectionUtils.isEmpty(output.getHistoryTestList())) {
+                        return ResponseUtil.noContent();
+                    }
+                    return ResponseUtil.ok(output);
+                })
+                .onErrorResume(e -> {
+                    logger.error("Error occurred while getting all history test: {}",
+                            e.getMessage(), e);
+                    return Mono.just(ResponseUtil.serverError(e.getMessage()));
+                });
+    }
 }
