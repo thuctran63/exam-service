@@ -79,7 +79,7 @@ public class ExamController {
             return Mono.just(ResponseUtil.unAuthorized("userId is null"));
         }
         return testService.testAnswer(
-                input, userData.getUserId())
+                input, userData.getUserId(), userData.getEmail())
                 .map(output -> ResponseUtil.ok(output))
                 .onErrorResume(e -> {
                     logger.error("Error occurred while submitting test answer: {}", e.getMessage(), e);
@@ -102,7 +102,7 @@ public class ExamController {
                 });
     }
 
-    @GetMapping("/getAllHistoryTest")
+    @GetMapping("/getHistoryTest")
     @RequiresAuth
     public Mono<ResponseEntity<CommonResponse<?>>> getAllHistoryTest(ServerWebExchange exchange) {
         UserData userData = exchange.getAttribute("USER_DATA");
@@ -123,4 +123,71 @@ public class ExamController {
                     return Mono.just(ResponseUtil.serverError(e.getMessage()));
                 });
     }
+
+    @GetMapping("/getTestHistory")
+    @RequiresAuth
+    public Mono<ResponseEntity<CommonResponse<?>>> getTestHistory(@RequestParam String idTestHistory) {
+        return historyTestService.getTestHistory(idTestHistory)
+                .map(output -> {
+                    return ResponseUtil.ok(output);
+                }).switchIfEmpty(Mono.fromCallable(() -> {
+                    logger.warn("Test history not found for id: {}", idTestHistory);
+                    return ResponseUtil.noContent();
+                }))
+                .onErrorResume(e -> {
+                    logger.error("Error occurred while getting test history: {}", e.getMessage(), e);
+                    return Mono.just(ResponseUtil.serverError(e.getMessage()));
+                });
+    }
+
+    @GetMapping("/getNumberOfTest")
+    @RequiresAuth(roles = { "ADMIN" })
+    public Mono<ResponseEntity<CommonResponse<?>>> getNumberOfTest() {
+        return testInfoService.getNumberOfTest()
+                .map(output -> {
+                    if (Objects.isNull(output.getNumberOfTest())) {
+                        return ResponseUtil.noContent();
+                    }
+                    return ResponseUtil.ok(output.getNumberOfTest());
+                })
+                .onErrorResume(e -> {
+                    logger.error("Error occurred while getting number of test: {}", e.getMessage(), e);
+                    return Mono.just(ResponseUtil.serverError(e.getMessage()));
+                });
+    }
+
+    @GetMapping("/getAllHistoryTest")
+    @RequiresAuth(roles = { "ADMIN" })
+    public Mono<ResponseEntity<CommonResponse<?>>> getAllHistoryTest() {
+        return historyTestService.getAllHistoryTest()
+                .collectList() // chuyển từ Flux -> Mono<List>
+                .map(outputList -> {
+                    if (CollectionUtils.isEmpty(outputList)) {
+                        return ResponseUtil.noContent();
+                    }
+                    return ResponseUtil.ok(outputList);
+                })
+                .onErrorResume(e -> {
+                    logger.error("Error occurred while getting all history test: {}", e.getMessage(), e);
+                    return Mono.just(ResponseUtil.serverError(e.getMessage()));
+                });
+    }
+
+    @GetMapping("/getAllTest")
+    @RequiresAuth(roles = { "ADMIN" })
+    public Mono<ResponseEntity<CommonResponse<?>>> getAllTest() {
+        return testService.getAllTest()
+                .collectList() // chuyển từ Flux -> Mono<List>
+                .map(outputList -> {
+                    if (CollectionUtils.isEmpty(outputList)) {
+                        return ResponseUtil.noContent();
+                    }
+                    return ResponseUtil.ok(outputList);
+                })
+                .onErrorResume(e -> {
+                    logger.error("Error occurred while getting all test: {}", e.getMessage(), e);
+                    return Mono.just(ResponseUtil.serverError(e.getMessage()));
+                });
+    }
+
 }

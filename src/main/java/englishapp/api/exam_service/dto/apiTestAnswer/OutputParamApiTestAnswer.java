@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OutputParamApiTestAnswer {
     private String idTest;
+    private String nameTest;
     private String score;
     private String scoreListening;
     private String scoreReading;

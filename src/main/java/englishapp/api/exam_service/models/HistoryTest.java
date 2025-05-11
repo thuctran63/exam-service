@@ -11,8 +11,11 @@ public class HistoryTest {
     @Id
     private String idTestHistory;
     private String idUser;
+    private String emailUser;
     private Answer TestInfo;
     private String score;
+    private String scoreListening;
+    private String scoreReading;
     private String time;
     private String dateTest;
 }

@@ -2,6 +2,8 @@ package englishapp.api.exam_service.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import englishapp.api.exam_service.dto.apiGetNumberOfTest.OutputParamApiGetNumberOfTest;
 import englishapp.api.exam_service.dto.apiGetTestInfo.OutputParamApiGetTestInfo;
 import englishapp.api.exam_service.dto.apiGetYear.OutputParamApiGetYear;
 import englishapp.api.exam_service.models.TestInfo;
@@ -33,4 +35,13 @@ public class TestInfoService {
                 });
     }
 
+    public Mono<OutputParamApiGetNumberOfTest> getNumberOfTest() {
+        return testInfoRepository.findAll()
+                .collectList()
+                .map(testInfos -> {
+                    OutputParamApiGetNumberOfTest output = new OutputParamApiGetNumberOfTest();
+                    output.setNumberOfTest(testInfos.size());
+                    return output;
+                });
+    }
 }

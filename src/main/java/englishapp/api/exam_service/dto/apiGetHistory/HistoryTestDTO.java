@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class HistoryTestDTO {
-    private String idTest;
+    private String idTestHistory;
     private String nameTest;
     private String dateTest;
     private String scoreTest;
