@@ -50,7 +50,7 @@ public class ExamController {
                 });
     }
 
-    @RequiresAuth
+    @RequiresAuth(roles = { "ADMIN", "USER" })
     @GetMapping("/getTest")
     public Mono<ResponseEntity<CommonResponse<?>>> getTest(@RequestParam String idTest) {
         return testService.getTest(idTest)
@@ -68,7 +68,7 @@ public class ExamController {
                 });
     }
 
-    @RequiresAuth
+    @RequiresAuth(roles = { "ADMIN", "USER" })
     @PostMapping("/TestAnswer")
     public Mono<ResponseEntity<CommonResponse<?>>> testAnswer(ServerWebExchange exchange,
             @RequestBody InputParamApiTestAnswer input) {
@@ -103,7 +103,7 @@ public class ExamController {
     }
 
     @GetMapping("/getHistoryTest")
-    @RequiresAuth
+    @RequiresAuth(roles = { "ADMIN", "USER" })
     public Mono<ResponseEntity<CommonResponse<?>>> getAllHistoryTest(ServerWebExchange exchange) {
         UserData userData = exchange.getAttribute("USER_DATA");
 
@@ -125,7 +125,7 @@ public class ExamController {
     }
 
     @GetMapping("/getTestHistory")
-    @RequiresAuth
+    @RequiresAuth(roles = { "ADMIN", "USER" })
     public Mono<ResponseEntity<CommonResponse<?>>> getTestHistory(@RequestParam String idTestHistory) {
         return historyTestService.getTestHistory(idTestHistory)
                 .map(output -> {
