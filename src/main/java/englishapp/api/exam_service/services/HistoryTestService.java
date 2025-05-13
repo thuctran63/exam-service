@@ -103,6 +103,7 @@ public class HistoryTestService {
         return historyTestRepository.findAll()
                 .flatMap(historyTest -> {
                     OutputParamGetAllHistoryTest output = new OutputParamGetAllHistoryTest();
+                    output.setIdTestHistory(historyTest.getIdTestHistory());
                     output.setEmail(historyTest.getEmailUser());
                     output.setScore(historyTest.getScore());
                     output.setDateTest(historyTest.getDateTest());
